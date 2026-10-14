@@ -5,7 +5,7 @@
 
 variables:
   - name: python_version
-    value: '<python-version-value>' # TODO 1 Replace python-version-value with 3.12
+    value: '3.12' # TODO 1 Replace python-version-value with 3.12
 
 trigger:
   - main
@@ -21,7 +21,7 @@ stages:
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: ${{ variables.<python-variable-name> }} # TODO 2: Replace <python-variable-name> with the variable declared at the top. That is, the variable name used for the version of python to use
+              versionSpec: ${{ variables.python_version }} # TODO 2: Replace <python-variable-name> with the variable declared at the top. That is, the variable name used for the version of python to use
               addToPath: true
               architecture: 'x64'
           
@@ -42,13 +42,24 @@ stages:
           # TODO 3:  Archive Files
           # Copy the ArchiveFiles@2 task from the "PUBLISHING THE BUILD ARTIFACTS" task and paste it under this comment block.
           # Please do NOT make any changes to this task.
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: '$(Build.SourcesDirectory)'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+              replaceExistingArchive: true
 
           
           
           # TODO: 4 Publish Build Artifact
           # Copy the PublishBuildArtifacts@1 task from the "PUBLISHING THE BUILD ARTIFACTS" task and paste it under this comment block.
           # Please do NOT make any changes to this task.
-
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'package'
+              publishLocation: 'Container'
           
 
 
@@ -73,7 +84,11 @@ stages:
                 #   4. For "Matching patterns", enter package/*.zip. This tells the pipeline to look for the zipped file from the previous stage
                 #   5. For "Destination directory", we use the default, $(Pipeline.Workspace).
                 #   6. Click on the "Add" button
-               
+               - task: DownloadPipelineArtifact@2
+                 inputs:
+                   buildType: 'current'
+                   itemPattern: 'package/*.zip'
+                   targetPath: '$(Pipeline.Workspace)'
 
                # TODO 6:
                # In this task, you will deploy the downloaded source code from the ownloadPipelineArtifact@2 task to Azure.
@@ -95,5 +110,12 @@ stages:
                # 11. Click on "Save and run"
                # 12. You will have to manually grant permissions to the "Deploy" job. Further instructions are provided
                #      in the write-up for Task 5.
-               
+               - task: AzureRmWebAppDeployment@5
+                 inputs:
+                   ConnectionType: 'AzureRM'
+                   azureSubscription: 'AI_Technicians_Fall_2026_b lmaggio(ada8b20a-44b5-47b1-ac27-d46c2f5c3296)'
+                   appType: 'webAppLinux'
+                   WebAppName: 'lmagg-webapp'
+                   packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+                   DeploymentTypeLinux: 'oneDeploy'
                     
