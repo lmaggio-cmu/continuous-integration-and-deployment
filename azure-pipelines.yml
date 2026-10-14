@@ -118,4 +118,6 @@ stages:
                    WebAppName: 'lmagg-webapp'
                    packageForLinux: '$(Pipeline.Workspace)/package/*.zip'
                    DeploymentTypeLinux: 'oneDeploy'
+                   StartupCommand: 'flask db upgrade && gunicorn -w 4 -b 0.0.0.0:8000 app:app'
+                   AppSettings: '-SCM_DO_BUILD_DURING_DEPLOYMENT true -WEBSITE_ENABLE_SYNC_UPDATE_SITE true'
                     
