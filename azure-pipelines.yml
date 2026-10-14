@@ -116,6 +116,6 @@ stages:
                    azureSubscription: 'AI_Technicians_Fall_2026_b lmaggio(ada8b20a-44b5-47b1-ac27-d46c2f5c3296)'
                    appType: 'webAppLinux'
                    WebAppName: 'lmagg-webapp'
-                   packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+                   packageForLinux: '$(Pipeline.Workspace)/package/*.zip'
                    DeploymentTypeLinux: 'oneDeploy'
                     
