@@ -111,7 +111,7 @@ def test_get_average_rating(client, sample_data):
     avg_rating = get_average_rating(restaurant.id)
 
     assert avg_rating == Decimal('4.5'), f"Expected 4.5, but got {avg_rating}"
-
+##Making an edit to try and trigger a check##
 def test_get_average_rating_no_reviews(client):
     """
 
